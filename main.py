@@ -20,7 +20,7 @@ class Eat:
         self.radius = r
         self.color = c
     
-    def check_collision(self, player_x, player_y, player_r):
+    def check_collision(self, player_x, player_y, player_r):#перевірка взаємодії гравця з їжею
         dx = self.x - player_x
         dy = self.y - player_y
         return hypot(dx, dy) <= self.radius + player_r
@@ -50,7 +50,7 @@ while running:
     scale = max(0.3 , min(50/list_ball[2], 1.5))
     pygame.draw.circle(screen, GREEN, (SIZE[0] //2, SIZE[1] //2), int(list_ball[2] * scale))#намалювали гравця
     
-    for eat in to_remove:
+    for eat in to_remove:# видаляємо їжу, що з'їли
         eats.remove(eat)
 
     keys = pygame.key.get_pressed()
@@ -68,3 +68,4 @@ while running:
 
 
 quit()#закрити екран
+
