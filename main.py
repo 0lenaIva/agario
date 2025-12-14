@@ -85,11 +85,24 @@ while running:
     for eat in to_remove:
         eats.remove(eat)
 
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_w]:list_ball[1] -= 15
-    if keys[pygame.K_s]:list_ball[1] += 15
-    if keys[pygame.K_a]:list_ball[0] -= 15
-    if keys[pygame.K_d]:list_ball[0] += 15
+    if not lose:
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_w]:list_ball[1] -= 15
+        if keys[pygame.K_s]:list_ball[1] += 15
+        if keys[pygame.K_a]:list_ball[0] -= 15
+        if keys[pygame.K_d]:list_ball[0] += 15
+        
+        try:
+            msg = f'{my_id}, {list_ball[0], list_ball[1], list_ball[2]}'
+            sock.send(msg.encode())
+        except:
+            pass
+        
+    if lose:
+        t = f.render('U Lose!', True, (240, 10,10))
+        x = SIZE[0]//2 - t.get_width()//2
+        y = SIZE[1]//2 - t.get_height()//2
+        screen.blit(t, (x,y))
 
     
     for e in pygame.event.get():#перебираємо усі події
