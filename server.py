@@ -23,13 +23,15 @@ def handle_data():
                 data = conn.recv(64).decode().strip()
                 if ',' in data:
                     parts = data.split(',')
-                    if len(parts) == 4:
-                        pid,x,y,r = map(int, parts)
+                    if len(parts) == 5:
+                        pid,x,y,r = map(int, parts[:4])
+                        name = parts[-1]
                         players[conn] = {
                               'id':pid,
                                 'x':x,
                                 'y':y,
-                                'r':r
+                                'r':r,
+                                'name':name
                         }
                         player_data[conn] = players[conn]      
             except:
@@ -58,7 +60,7 @@ def handle_data():
                 to_remove.append(conn)
                 continue
             try:
-                packet = '|'.join([f"{p['id']}', {p['x']},{p['y']},{p['r']}"  
+                packet = '|'.join([f"{p['id']}', {p['x']},{p['y']},{p['r'], p['name']}"  
                                    for c, p in players.items() if c!=conn and c not in eliminated] + '|')
                 conn.send(packet.encode())
             except:
@@ -79,7 +81,8 @@ while True:
             'id':id_counter,
             'x':0,
             'y':0,
-            'r':0
+            'r':0,
+            'name':None
         }
         conn_ids[conn] = id_counter
         conn.send(f'{id_counter}, 0, 0,20'.encode())
