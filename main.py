@@ -23,6 +23,7 @@ FPS = 60
 WHITE = (255, 255, 255)# кортеж
 GREEN = (0,255,0)
 #
+running = True
 all_players = []
 lose = False
 f = pygame.font.SysFont('Monospace', 45)
@@ -66,7 +67,6 @@ eats = [Eat(random.randint(-2000,SIZE[0] + 2000),#x
              )) for _ in range(300)]
 
 #list_ball = [0,0,20]
-running = True
 while running:
     screen.fill(WHITE)#зафарбувати екран
     to_remove = []
@@ -97,7 +97,7 @@ while running:
             sock.send(msg.encode())
         except:
             pass
-        
+
     if lose:
         t = f.render('U Lose!', True, (240, 10,10))
         x = SIZE[0]//2 - t.get_width()//2
