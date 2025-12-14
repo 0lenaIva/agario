@@ -23,10 +23,12 @@ FPS = 60
 WHITE = (255, 255, 255)# кортеж
 GREEN = (0,255,0)
 #
+name = ''
 running = True
 all_players = []
 lose = False
 f = pygame.font.SysFont('Monospace', 45)
+f_name = pygame.font.SysFont('Monospace', 20)
 #
 def  receive_data():
     global all_players, running, lose
@@ -37,7 +39,7 @@ def  receive_data():
                 lose  = True
             elif data:
                 parts = data.strip('|').split('|')
-                all_players = [list(map(int, p.split(','))) for p in parts if len(p.split(','))==4]
+                all_players = [list(map(int, p.split(',')[:4])) + [p.split(',')[4]] for p in parts if len(p.split(','))==5]
         except:
             pass
 Thread(target=receive_data, daemon=True).start()
@@ -93,7 +95,7 @@ while running:
         if keys[pygame.K_d]:list_ball[0] += 15
         
         try:
-            msg = f'{my_id}, {list_ball[0], list_ball[1], list_ball[2]}'
+            msg = f'{my_id}, {list_ball[0], list_ball[1], list_ball[2], name}'
             sock.send(msg.encode())
         except:
             pass
