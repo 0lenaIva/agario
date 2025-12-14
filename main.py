@@ -1,6 +1,19 @@
 import pygame
 import random
 from math import hypot
+from socket import socket, AF_INET, SOCK_STREAM
+from threading import Thread
+
+#
+HOST= 'localhost'
+PORT = 8080
+sock = socket(AF_INET, SOCK_STREAM)
+sock.connect((HOST, PORT))
+my_data = list(map(int, sock.recv(1024).decode().strip().split(',') ))
+my_id = my_data[0]
+list_ball = my_data[1:]
+sock.setblocking(False)
+#
 
 pygame.init()# підключає модулі
 
@@ -9,6 +22,25 @@ SIZE = (1000,700)
 FPS = 60
 WHITE = (255, 255, 255)# кортеж
 GREEN = (0,255,0)
+#
+all_players = []
+lose = False
+f = pygame.font.SysFont('Monospace', 45)
+#
+def  receive_data():
+    global all_players, running, lose
+    while running:
+        try:
+            data = sock.recv(4096).decode().strip()
+            if data == 'LOSE':
+                lose  = True
+            elif data:
+                parts = data.strip('|').split('|')
+                all_players = [list(map(int, p.split(','))) for p in parts if len(p.split(','))==4]
+        except:
+            pass
+Thread(target=receive_data, daemon=True).start()
+#
 
 screen = pygame.display.set_mode(SIZE)# створення екрана з заданими параметрами
 clock = pygame.time.Clock()#таймер
@@ -20,7 +52,7 @@ class Eat:
         self.radius = r
         self.color = c
     
-    def check_collision(self, player_x, player_y, player_r):#перевірка взаємодії гравця з їжею
+    def check_collision(self, player_x, player_y, player_r):
         dx = self.x - player_x
         dy = self.y - player_y
         return hypot(dx, dy) <= self.radius + player_r
@@ -33,7 +65,7 @@ eats = [Eat(random.randint(-2000,SIZE[0] + 2000),#x
              random.randint(0,255)#blut
              )) for _ in range(300)]
 
-list_ball = [0,0,20]
+#list_ball = [0,0,20]
 running = True
 while running:
     screen.fill(WHITE)#зафарбувати екран
@@ -50,7 +82,7 @@ while running:
     scale = max(0.3 , min(50/list_ball[2], 1.5))
     pygame.draw.circle(screen, GREEN, (SIZE[0] //2, SIZE[1] //2), int(list_ball[2] * scale))#намалювали гравця
     
-    for eat in to_remove:# видаляємо їжу, що з'їли
+    for eat in to_remove:
         eats.remove(eat)
 
     keys = pygame.key.get_pressed()
@@ -68,4 +100,3 @@ while running:
 
 
 quit()#закрити екран
-
