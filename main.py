@@ -3,10 +3,14 @@ import random
 from math import hypot
 from socket import socket, AF_INET, SOCK_STREAM
 from threading import Thread
+from launcher import ConnectWindow
 
+win = ConnectWindow()
+win.mainloop()
 #
-HOST= 'localhost'
-PORT = 8080
+name = win.name
+HOST= win.host
+PORT = win.port
 sock = socket(AF_INET, SOCK_STREAM)
 sock.connect((HOST, PORT))
 my_data = list(map(int, sock.recv(1024).decode().strip().split(',') ))
@@ -22,8 +26,8 @@ SIZE = (1000,700)
 FPS = 60
 WHITE = (255, 255, 255)# кортеж
 GREEN = (0,255,0)
+RED = (255, 0,0)
 #
-name = ''
 running = True
 all_players = []
 lose = False
@@ -83,6 +87,26 @@ while running:
 
     scale = max(0.3 , min(50/list_ball[2], 1.5))
     pygame.draw.circle(screen, GREEN, (SIZE[0] //2, SIZE[1] //2), int(list_ball[2] * scale))#намалювали гравця
+
+    # Малювання інших гравців
+    for p in all_players:
+        p_id, p_x,p_y,p_r,p_name = p
+        if p_id == my_id:
+            continue
+
+        sx = int((p_x - list_ball[0] + SIZE[0]//2))
+        sy = int((p_y - list_ball[1]) + SIZE[1] // 2) 
+        
+        pygame.draw.circle(screen, RED, (sx,sy), int(p_r * scale) )#намалювали гравця
+
+        name_text = f_name.render(p_name, True, (0,0,0))
+        screen.blit(
+            name_text,
+            (sx - name_text.get_width()//2, sy - int(p_r * scale) - 10)
+        )
+
+
+    #
     
     for eat in to_remove:
         eats.remove(eat)
@@ -95,7 +119,7 @@ while running:
         if keys[pygame.K_d]:list_ball[0] += 15
         
         try:
-            msg = f'{my_id}, {list_ball[0], list_ball[1], list_ball[2], name}'
+            msg = f'{my_id}, {list_ball[0]}, {list_ball[1]}, {list_ball[2]}, {name}'#!!!!!!!!!!!!!!!!!!!!!!!!
             sock.send(msg.encode())
         except:
             pass
