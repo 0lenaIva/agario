@@ -44,7 +44,7 @@ def  receive_data():
             elif data:
                 parts = data.strip('|').split('|')
                 all_players = [list(map(int, p.split(',')[:4])) + [p.split(',')[4]] for p in parts if len(p.split(','))==5]
-                print(all_players)
+                
         except:
             pass
 Thread(target=receive_data, daemon=True).start()
@@ -81,6 +81,10 @@ while running:
         if eat.check_collision(list_ball[0], list_ball[1],list_ball[2]):
             to_remove.append(eat)
             list_ball[2] += int(eat.radius * 0.2)
+            eats.append(Eat(random.randint(-2000,SIZE[0] + 2000),
+                            random.randint(-2000,SIZE[1] + 2000),
+                            10,
+                            (random.randint(0,255),random.randint(0,255),random.randint(0,255))))
         else:
             sx = int(eat.x - list_ball[0] + SIZE[0]//2)
             sy = int(eat.y - list_ball[1] + SIZE[1] // 2)
@@ -114,11 +118,11 @@ while running:
 
     if not lose:
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_w]:list_ball[1] -= 15
-        if keys[pygame.K_s]:list_ball[1] += 15
-        if keys[pygame.K_a]:list_ball[0] -= 15
-        if keys[pygame.K_d]:list_ball[0] += 15
-        
+        if keys[pygame.K_w] and list_ball[1] > -2000 :list_ball[1] -= 15
+        if keys[pygame.K_s] and list_ball[1] < SIZE[1]+2000 :list_ball[1] += 15
+        if keys[pygame.K_a] and list_ball[0] > -2000 :list_ball[0] -= 15
+        if keys[pygame.K_d] and list_ball[0] < SIZE[0]+2000 :list_ball[0] += 15
+        print(list_ball[1])
         try:
             msg = f'{my_id}, {list_ball[0]}, {list_ball[1]}, {list_ball[2]}, {name}'#!!!!!!!!!!!!!!!!!!!!!!!!
             sock.send(msg.encode())
