@@ -28,6 +28,7 @@ WHITE = (255, 255, 255)# кортеж
 GREEN = (0,255,0)
 RED = (255, 0,0)
 #
+index = 1
 running = True
 all_players = []
 lose = False
@@ -88,10 +89,10 @@ while running:
         else:
             sx = int(eat.x - list_ball[0] + SIZE[0]//2)
             sy = int(eat.y - list_ball[1] + SIZE[1] // 2)
-            pygame.draw.circle(screen, eat.color, (sx,sy), eat.radius)
+            pygame.draw.circle(screen, eat.color, (sx,sy), eat.radius / index)
 
   
-    pygame.draw.circle(screen, GREEN, (SIZE[0] //2, SIZE[1] //2), int(list_ball[2]))#намалювали гравця
+    pygame.draw.circle(screen, GREEN, (SIZE[0] //2, SIZE[1] //2), int(list_ball[2])/index)#намалювали гравця
 
     # Малювання інших гравців
     for p in all_players:
@@ -102,7 +103,7 @@ while running:
         sx = int(p_x - list_ball[0] + SIZE[0]//2)
         sy = int(p_y - list_ball[1] + SIZE[1] // 2) 
         
-        pygame.draw.circle(screen, RED, (sx,sy), int(p_r) )#намалювали гравця
+        pygame.draw.circle(screen, RED, (sx,sy), int(p_r) / index)#намалювали гравця
 
         name_text = f_name.render(p_name, True, (0,0,0))
         screen.blit(
@@ -110,7 +111,8 @@ while running:
             (sx - name_text.get_width()//2, sy - int(p_r) - 10)
         )
 
-
+    if list_ball[2] > 50:
+        index = list_ball[2] / 45
     #
     
     for eat in to_remove:
