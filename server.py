@@ -12,15 +12,15 @@ conn_ids = {}
 id_counter = 0
 
 def handle_data():
-    global id_counter
+    global id_counter, players
     while True:
         time.sleep(0.01)
         player_data = {}
-        to_remove = []
-
+        #to_remove = []
+        eliminated = []
         for conn in list(players):
             try:
-                data = conn.recv(64).decode().strip()
+                data = conn.recv(4096).decode().strip()
                 if ',' in data:
                     parts = data.split(',')
                     if len(parts) == 5:
@@ -35,9 +35,10 @@ def handle_data():
                         }
                         player_data[conn] = players[conn]      
             except:
+                #eliminated.append(conn)
                 continue
         
-        eliminated = []
+        
         for conn1 in player_data:
             if conn1 in eliminated: continue
             p1 = player_data[conn1]
@@ -57,18 +58,25 @@ def handle_data():
                     conn.send('LOSE'.encode())
                 except:
                     pass
-                to_remove.append(conn)
-                continue
+                player_data.pop(conn, None)
+                players.pop(conn, None)
+                conn_ids.pop(conn, None)
+                #to_remove.append(conn)
+                
+
+        for conn in list(players.keys()):
+    
             try:
-                packet = '|'.join([f"{p['id']}, {p['x']},{p['y']},{p['r']}, {p['name']}"  
+                packet = '|'.join([f"{p['id']},{p['x']},{p['y']},{p['r']},{p['name']}"  
                                    for c, p in players.items() if c!=conn and c not in eliminated])#!!!!!!!!!!!!!!!
+                print(packet)
                 conn.send(packet.encode())
             except:
-                to_remove.append(conn)
+                continue
             
-        for conn in to_remove:
+        '''for conn in to_remove:
             players.pop(conn, None)
-            conn_ids.pop(conn, None)
+            conn_ids.pop(conn, None)'''
             
 Thread(target=handle_data, daemon=True).start()           
 
@@ -85,6 +93,6 @@ while True:
             'name':None
         }
         conn_ids[conn] = id_counter
-        conn.send(f'{id_counter}, 0, 0,20'.encode())
+        conn.send(f'{id_counter},0,0,20'.encode())
     except:
         pass
