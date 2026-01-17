@@ -44,6 +44,7 @@ def  receive_data():
             elif data:
                 parts = data.strip('|').split('|')
                 all_players = [list(map(int, p.split(',')[:4])) + [p.split(',')[4]] for p in parts if len(p.split(','))==5]
+                print(all_players)
         except:
             pass
 Thread(target=receive_data, daemon=True).start()
@@ -81,12 +82,12 @@ while running:
             to_remove.append(eat)
             list_ball[2] += int(eat.radius * 0.2)
         else:
-            sx = int((eat.x - list_ball[0] + SIZE[0]//2))
-            sy = int((eat.y - list_ball[1]) + SIZE[1] // 2)
+            sx = int(eat.x - list_ball[0] + SIZE[0]//2)
+            sy = int(eat.y - list_ball[1] + SIZE[1] // 2)
             pygame.draw.circle(screen, eat.color, (sx,sy), eat.radius)
 
-    scale = max(0.3 , min(50/list_ball[2], 1.5))
-    pygame.draw.circle(screen, GREEN, (SIZE[0] //2, SIZE[1] //2), int(list_ball[2] * scale))#намалювали гравця
+  
+    pygame.draw.circle(screen, GREEN, (SIZE[0] //2, SIZE[1] //2), int(list_ball[2]))#намалювали гравця
 
     # Малювання інших гравців
     for p in all_players:
@@ -94,15 +95,15 @@ while running:
         if p_id == my_id:
             continue
 
-        sx = int((p_x - list_ball[0] + SIZE[0]//2))
-        sy = int((p_y - list_ball[1]) + SIZE[1] // 2) 
+        sx = int(p_x - list_ball[0] + SIZE[0]//2)
+        sy = int(p_y - list_ball[1] + SIZE[1] // 2) 
         
-        pygame.draw.circle(screen, RED, (sx,sy), int(p_r * scale) )#намалювали гравця
+        pygame.draw.circle(screen, RED, (sx,sy), int(p_r) )#намалювали гравця
 
         name_text = f_name.render(p_name, True, (0,0,0))
         screen.blit(
             name_text,
-            (sx - name_text.get_width()//2, sy - int(p_r * scale) - 10)
+            (sx - name_text.get_width()//2, sy - int(p_r) - 10)
         )
 
 
@@ -129,6 +130,7 @@ while running:
         x = SIZE[0]//2 - t.get_width()//2
         y = SIZE[1]//2 - t.get_height()//2
         screen.blit(t, (x,y))
+        all_players.clear()
 
     
     for e in pygame.event.get():#перебираємо усі події
